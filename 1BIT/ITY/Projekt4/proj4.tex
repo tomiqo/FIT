@@ -1,0 +1,50 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[left=2cm, top=3cm, text={17cm, 24cm}]{geometry}
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+\usepackage[hyphens]{url}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+\textsc{\Huge Vysoké učení technické v~Brně}\\
+\textsc{\huge Fakulta informačních technologií}\\
+\vspace{\stretch{0.382}}
+\LARGE Typografie a~publikování\,--\,4. projekt\\
+\Huge Bibliografické Citácie\\
+\vspace{\stretch{0.618}}
+\Large \today \hfill Tomáš Žigo  \newpage
+\end{center}
+\end{titlepage}
+
+\section{\LaTeX}
+
+\LaTeX je software na tvorbu a~písanie dokumentov. Software je zdarma a~voľne dostupný, podobne ako aj jeho zdroje. To znamená, že môžme čítať a~aj meniť všetko od jadra {\LaTeX}u po posledné rozšírovacie balíčky. Viac o~úvode do {\LaTeX}u je uvedené v~\cite{KottwitzStefan}.
+
+Jadro systému tvorí prekladač jazyka {\TeX} spoločne s~nadstavbou {\LaTeX}. Vstupom je textový súbor vytvorený ľubovoľným editorom, vačšinou sa jedná o~súbor, ktorý má v~názve \texttt{.tex}. Podrobnejšie informácie o~práci systému sú popísané v~\cite{RybickaJiri}. Ako nainštalovať samotný {\LaTeX} je obsiahnuté v~\cite{BojkoPavel}.
+
+Základné stavebné jednotky syntaxe {\LaTeX}u tvoria nasledovné tri zložky, tak ako je uvedené v~\cite{VavricekJan}:
+\begin{itemize}
+\item Povolené znaky
+\item Príkazy
+\item Prostredie
+\end{itemize}	
+
+V~{\LaTeX}e je možné pracovať aj s~textom v ~slovenskom alebo českom jazyku. Pre prácu s týmito jazykmi sú však použité modifikované programy alebo doplnkové balíky. Bližšie informácie ohľadom týchto jazykov v {\LaTeX}e sú dostupné v~\cite{MartinekDavid}. Dokonca existuje združenie CSTUG (Československé združenie užívateľov {\TeX}u), kde odborníci udržiavajú svoje webové stránky a~snažia sa software trochu viac priblížiť spoločnosti. Viac informácií v~\cite{VeselyJindrich}.
+
+Spracovanie textu však má aj akési pravidlá. Pravidlá typu viac medzier tesne vedľa seba sa považujú za jednu, alebo že medzezery na začiatku riadku sú ignorované je vhodné poznať. Viac k~téme v~\cite{OlsakPetr}. 
+
+Oproti systému \texttt{MS Word} dokáže {\LaTeX} jednoduchšie vkladať vlastné štýly, aj keď samotné vyhľadávanie štýlov je zložitejšie. Navyše systém {\LaTeX} dokáže rozdeliť dokument na viacero častí, kde pri druhom menovanom systéme je potrebné použiť externé aplikácie. O~ďalších rozdieloch sa píše v~\cite{VavreckovaSarka}. 
+
+{\TeX} nebol vyvynutý na tvorbu grafických prác, ale aj na napriek tomu je tu možnosť s~ním vytvárať aj grafické objekty. Viac informácií pre vytváranie grafiky v~\cite{SunolFrancesc}.
+V~{\LaTeX}e je možné vytvárať dokonca aj obálky. Tejto problematike sa venuje \cite{MerciadriLuca}.  
+
+\newpage
+\bibliographystyle{czechiso}
+\renewcommand{\refname}{Literatúra}
+\bibliography{proj4}
+
+\end{document}
