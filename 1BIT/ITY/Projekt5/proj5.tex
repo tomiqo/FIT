@@ -1,0 +1,140 @@
+\documentclass[10pt, hyperref={unicode}]{beamer}
+\usetheme{Antibes}
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{hyperref}
+
+\title{Typografie a~publikování\,--\,5.~projekt}
+\subtitle{Konečné automaty}
+\author{Tomáš Žigo\texorpdfstring{\\ xzigot00@stud.fit.vutbr.cz}{}}
+\institute{Vysoké učení technické v~Brně\\
+	Fakulta informačních technologií}
+\date{\today}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Prehlad}
+\transblindsvertical
+\tableofcontents
+\end{frame}
+
+\section{Úvod}
+\subsection{Definícia}
+\begin{frame}
+\frametitle{Definícia}
+\begin{itemize}
+\item<1-> Výpočtový model.
+\item<2-> Skladá sa z~konečného mnnožstva stavov a~prechodov.
+\item<3-> Aplikácia napríklad pri vyhľadávaní v~texte.
+\end{itemize}
+\end{frame}
+
+\subsection{Príklad}
+\begin{frame}
+\transblindsvertical
+\begin{itemize}
+\item<1-> Príklad jednoduchého konečného automatu so vstupom "abbc":
+\begin{itemize}
+\item<2-> Zo vstupu sa pohneme smerom šípky "a", to znamená, že prvý symbol zo vstupu ide do stavu $q_1$
+\item<3-> Na vstupe nám ešte ostalo "bbc", šípka pre vstup "b", smeruje späť do toho istého uzla. Toto sa zopakuje 2x.
+\item<4-> Už nám ostal iba znak "c". Šípka pre vstup "c" nás posunie do stavu $q_2$.
+\item<5-> Na konci sme sa ocitli v~stave $q_2$, ktorý je aj koncovým stavom.
+\end{itemize}
+\end{itemize}
+\begin{center}
+\includegraphics[scale=0.5]{pr_automat.eps}
+\end{center}
+\end{frame}
+
+\subsection{Funkcia}
+\begin{frame}
+\transblindsvertical
+\frametitle{Funkcia konečného automatu}
+\begin{enumerate}
+\item<1-> Automat sa nachádza v~počiatočnom stave.
+\item<2-> Automatu je predložený konečný vstupý reťazec postavený nad jeho vstupnou abecedou.
+\item<3-> Automat prečíta a~odoberie symbol zo vstupného reťazca.
+\item<4-> Automat prevedie prechod na zaklade symbolu a~aktuálneho vnútorného stavu.
+\item<5-> Body 2-4 sa opakujú, pokiaľ nie je celý vstupný reťazec prečítaný.
+\end{enumerate}
+\end{frame}
+
+\section{DKA a~NKA}
+\begin{frame}
+\transblindsvertical
+\frametitle{Modely}
+\begin{itemize}
+\item<1-> Základné modely sú:
+\begin{itemize}
+\item<2-> Deterministický konečný automat (DKA)
+\item<3-> Nedeterministický konečný automat (NKA)
+\end{itemize}
+\end{itemize}
+\begin{center}
+\includegraphics<4->[scale=0.4]{automat.eps}
+\end{center}
+\end{frame}
+
+\subsection{DKA - Deterministický konečný automat}
+\begin{frame}
+\transblindsvertical
+\frametitle{Definícia DKA}
+\begin{itemize}
+\item Pätica ${\Sigma,K,q_0,\delta,F}$
+\item Kde:
+\begin{itemize}
+\item $\Sigma$ je vstupná abeceda.
+\item $K$ je konečná množina stavov.
+\item $q_0$ je počiatočný stav.
+\item $\delta$ : ${Q x \Sigma \longrightarrow Q}$ je prechodová funkcia.
+\item $F$ je množina akceptačných stavov.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\transblindsvertical
+\frametitle{Konfigurácia DKA}
+\begin{itemize}
+\item Dvojica ${(q,w)\epsilon K~x \Sigma^*}$
+\item $q$ je aktuálny stav automatu
+\item $w$ je dosiaľ neprečítaná časť vstupného slova
+\end{itemize}
+\end{frame}
+
+\subsection{NKA - Nedeterministický konečný automat}
+\begin{frame}
+\transblindsvertical
+\frametitle{Definícia NKA}
+\begin{itemize}
+\item Je rovnaká pätica ako DKA: ${\Sigma,K,q_0,\delta,F}$
+\item Rozdiely medzi DKA:
+\begin{itemize}
+\item NKA povoľuje prechody na $\epsilon$
+\item Nový stav nie je pre každý prechod určený jednoznačne.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section*{Zdroje}
+\begin{frame}{Použité zdroje}
+\transblindsvertical
+	\begin{thebibliography}{1}
+		\bibitem[Konečný automat]{automat} Konečný automat Wiki
+		\newblock \url{https://bit.ly/2HD3u9It}
+		\bibitem[Konečný automat2]{automat} Konečný automat
+		\newblock \url{https://matematika.cz/konecny-automat}
+		\bibitem[Konečný automat3]{automat} Konečný automat VOHO
+		\newblock \url{http://voho.eu/wiki/konecny-automat/}
+	\end{thebibliography}
+\end{frame}
+\end{document}
