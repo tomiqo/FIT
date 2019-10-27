@@ -1,0 +1,242 @@
+#!/bin/sh
+
+#IOS-Project 1
+#Author: Tomas Zigo
+
+export POSIXLY_CORRECT=yes
+
+#realpath function
+testRealpath(){
+if ! [ -x "$(command -v realpath)" ]; then
+  echo "Error - realpath not found!" >&2
+  exit 1
+fi
+}
+
+#Check variables and set editor
+testEditor(){
+if [ -n "$EDITOR" ]; then
+	editor=$EDITOR
+elif [ -n "$VISUAL" ]; then
+	editor=$VISUAL
+elif [ -z "$EDITOR" ] && [ -z "$VISUAL" ]; then
+	editor="vi"
+else
+	echo "Error - can not start editor" >&2
+	exit 1
+fi
+}
+
+#Check if WEDI_RC is set 
+testWedi_RC(){
+	if [ -z "$WEDI_RC" ]; then
+		echo "Error - path for saving files was not set!" >&2
+		exit 1
+	elif [ -d "$WEDI_RC" ]; then
+		echo "Error - path in WEDI_RC is directory!" >&2
+		exit 1
+	else
+		mkdir -p "$(dirname "$WEDI_RC")"
+		touch "$WEDI_RC"
+	fi
+}
+
+#Run editor with selected file and write entry
+edit(){
+	$2 "$1"
+	name=$(basename "$1")
+	echo "$name":"$(realpath "$1")":"$(date +%F)">>"$WEDI_RC"
+}
+
+#Run editor with last edited file
+lastEdit(){
+	if [ -s "$WEDI_RC" ]; then
+		noFile
+	else 
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	path="$(realpath "$1")"
+	entry=$(cat "$WEDI_RC"| grep "$1/[^/]*$" | tail -1 | cut -f1 -d":")
+	if [ -z "$entry" ]; then
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	edit "$entry" "$2"
+}
+
+#Show list of edited files before/after Date
+argAB(){
+	if [ -s "$WEDI_RC" ]; then
+		noFile
+	else 
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	path="$(realpath "$3")"
+	entry=$(cat "$WEDI_RC"| grep "$path/[^/]*$" | sort | uniq)
+	setTime=$(echo "$2" | sed 's/\-//g')
+	if [ -z "$entry" ]; then
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	if [ "$1" = "-a" ]; then
+		echo "List of edited files after $2 :"
+	else
+		echo "List of edited files before $2 :"
+	fi
+	for i in $entry; do
+		entryTime=$(echo "$i" | cut -d":" -f3 | sed 's/\-//g')
+		if [ "$1" = "-b" ] && [ "$entryTime" -lt "$setTime" ]; then
+			item=$(echo "$i" | cut -d":" -f1)
+		elif [ "$1" = "-a" ] && [ "$entryTime" -ge "$setTime" ]; then
+			item=$(echo "$i" | cut -d":" -f1)
+		fi
+		if [ -n "$item" ]; then
+			echo "$item"
+		fi
+	done | uniq
+}
+
+#Most edited file
+argM(){
+	if [ -s "$WEDI_RC" ]; then
+		noFile
+	else 
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	entry=$(cat "$WEDI_RC" | cut -f2 -d":" | grep "$1/[^/]*$" | sort| uniq -c | sort -rn | head -1 | cut -d"/" -f2- | sed 's/.*\///')
+	if [ -z "$entry" ]; then
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	edit "$entry" "$2"
+}
+
+#List of edited files
+argL(){
+	if [ -s "$WEDI_RC" ]; then
+		noFile
+	else 
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	entry=$(cat "$WEDI_RC" | cut -f2 -d":" | grep "$1/[^/]*$" |sort | uniq | sed 's/.*\///')
+	if [ -z "$entry" ]; then
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	echo "List of edited files:" "$entry"
+}
+
+#Delete non-existing files
+noFile(){
+	entry=$(cat "$WEDI_RC")
+	cp /dev/null "$WEDI_RC"
+	for i in $entry; do
+		entryExist=$(echo "$i" | cut -d":" -f2)
+		if [ -f "$entryExist" ]; then
+			echo "$i" >> "$WEDI_RC"
+		fi
+	done
+}
+
+#Main code(calling functions etc.)
+testRealpath
+testEditor
+testWedi_RC
+if [ "0" = "$#" ]; then
+	if [ ! -s "$WEDI_RC" ]; then
+		echo "Error - no edited file!">&2
+		exit 1
+	fi
+	path=$(realpath .)
+	lastEdit "$path" $editor
+elif [ "$#" -le "3" ]; then
+	if [ "$#" = "1" ]&&[ -d "$1" ]; then
+		if [ ! -s "$WEDI_RC" ]; then
+			echo "Error - no edited file!">&2
+			exit 1
+		fi
+		path=$(realpath "$1")
+		lastEdit "$path" $editor
+	elif [ "$#" = "1" ]&&[ -f "$1" ]; then
+		edit "$1" $editor
+	elif [ "$1" = "-m" ] || [ "$1" = "-l" ] || [ "$1" = "-b" ] || [ "$1" = "-a" ]; then
+		if [ ! -s "$WEDI_RC" ]; then
+			echo "Error - no edited file!">&2
+			exit 1
+		fi
+		while getopts 'mlba' optarg; do
+			case "${optarg}" in
+				m)
+					if [ "$#" = "2" ] && [ -d "$2" ]; then
+						path="$(realpath "$2")"
+					elif [ "$#" = "1" ]; then
+						path=$(realpath .)
+					else
+						echo "Error - wrong arguments!" >&2
+						exit 2
+					fi
+					argM "$path" $editor
+					;;
+				l)
+					if [ "$#" = "2" ] && [ -d "$2" ]; then
+						path="$(realpath "$2")"
+					elif [ "$#" = "1" ]; then
+						path=$(realpath .)
+					else
+						echo "Error - wrong arguments!" >&2
+						exit 2
+					fi
+					argL "$path" $editor	
+					;;	
+				b)	
+					if [ "$#" = "3" ] && [ -d "$3" ]; then
+						path="$(realpath "$3")"
+					elif [ "$#" = "2" ];then
+						path=$(realpath .)
+					else 
+						echo "Error - wrong arguments!" >&2
+						exit 2
+					fi
+					if echo "$2" | grep -E -q '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+						argAB "$1" "$2" "$path"
+					else
+						echo "Error - wrong date format" >&2
+						exit 2
+					fi
+					;;	
+				a)	
+					if [ "$#" = "3" ] && [ -d "$3" ]; then
+						path="$(realpath "$3")"
+					elif [ "$#" = "2" ];then
+						path=$(realpath .)
+					else 
+						echo "Error - wrong arguments!" >&2
+						exit 2
+					fi
+					if echo "$2" | grep -E -q '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+						argAB "$1" "$2" "$path"
+					else
+						echo "Error - wrong date format" >&2
+						exit 2
+					fi
+					;;	
+				*) 
+					echo "Error - wrong arguments!" >&2
+					exit 2				
+			esac
+		done
+	elif [ "$#" = "1" ]&&[ ! -f "$1" ]; then
+		echo "Error - file do not exists!">&2
+		exit 1
+	else
+		echo "Error - wrong arguments!" >&2
+		exit 2
+	fi
+else
+	echo "Error - too much arguments!" >&2
+	exit 2	
+fi
